@@ -1,3 +1,85 @@
+fn SubsetArray overlappedFacesArray currOverlappedFaces =
+(
+
+	format "\n\n\n\n\n Debug checking subset of arrays\n"
+	format "\n OverlappedFacesArray count %" overlappedFacesArray.count
+	format "\n CurrOverlappedFaces.count %" currOverlappedFaces.count
+	format "\n OverlappedFacesArray %" overlappedFacesArray
+	
+	overlappedFacesArrayType = classOf overlappedFacesArray
+	currOverlappedFacesType = classOf currOverlappedFaces
+	
+	format "\n\n\n overlappedFacesArrayType: % currOverlappedFacesType: %" overlappedFacesArrayType currOverlappedFacesType
+	
+	for i = 1 to overlappedFacesArray.count do
+	(
+		format "\nOverlapped Faces: %\n" overlappedFacesArray[i]
+		for overlappedFacesIndex in overlappedFacesArray[i] do
+		(
+			for currOverlappedFacesIndex in currOverlappedFaces do
+			(
+				if overlappedFacesIndex == currOverlappedFacesIndex do
+				(
+					format "Entered and Equal"
+					format "\n % \n " overlappedFacesArray[i][currOverlappedFacesIndex]
+					
+					for k in currOverlappedFaces do
+					(
+						format "\n currOverlappedFaces[k] %\n" k
+						overlappedFacesArray[i][k] = true
+					)
+					format "\n % \n" overlappedFacesArray
+					return 1
+				)
+			)
+		)
+	)
+	
+	return 0
+)
+	
+-- 	for i = 1 to overlappedFacesArray.count do
+-- 	(
+-- 		for index in overlappedFacesArray[i] do
+-- 		(
+-- 			for j = 1 to currOverlappedFaces.count do
+-- 			(
+-- 				if (index == currOverlappedFaces[j]) do
+-- 				(
+-- 					for k = 1 to currOverlappedFaces.count do
+-- 					(
+-- 						print "\n\n\nOverlapped Faces\n\n\n"
+-- 						format "\n%\n" currOverlappedFaces[k]
+-- 						print(overlappedFacesArray[currOverlappedFaces[k]])
+-- 					)
+-- 					return 1
+-- 				)
+-- 			)
+-- 		)
+-- 	)
+	
+-- 	for i = 1 to overlappedFacesArray.count do
+-- 	(
+-- 		format "\ni loop: %" i
+-- 		for j = 1 to currOverlappedFaces.count do
+-- 		(
+-- 			format "\nj loop: %" j
+-- 			if(overlappedFacesArray[i] == currOverlappedFaces[j]) do
+-- 			(
+-- 				format "\ni == j"
+-- 				break
+-- 			)
+-- 		)
+-- 		if (j == overlappedFacesArray.count) do
+-- 		(
+-- 			format "\nj == overlappedFacesArray.count"
+-- 			return 0
+-- 		)
+-- 	)
+-- 	format "\nReturn 1 / return true"
+
+	
+
 fn findMinMax face1VertArray face2VertArray faceIndex1 faceIndex2= 
 (
 	local minX = face1VertArray[1].x
@@ -57,7 +139,7 @@ fn polygonsOverlap unwrapMod obj faceIndex1 faceIndex2 =
 	local face1VertArray = #()
 	local face2VertArray = #()
 	
-	format "Get Vertices Index From Face: %\n" faceIndex1
+	format "\nGet Vertices Index From Face: %\n" faceIndex1
 	
 	for i = 1 to vertIndexCount1 do
 	(
@@ -88,7 +170,7 @@ if selection.count == 1 then
 (
 	if isKindOf selection[1] Editable_Poly then
 	(
-		redrawViews()
+-- 		redrawViews()
 		local obj = selection[1]
 		max modify mode
 		unwrapMod = Unwrap_UVW()
@@ -102,23 +184,24 @@ if selection.count == 1 then
 		overlappedFaces = unwrapMod.getSelectedFaces()
 		
 		overlappedFaces = overlappedFaces as array
-		print "Overlapped Faces: "
+		format "\n OverlappedFacesAsArray: % \n" overlappedFaces
 		
-		overlappedFacesArray = #()
+		global overlappedFacesArray = #()
+		global currOverlappedFaces = #{}
 		
 		local status = false
 		
 		-- Iterate overlapped faces
 		for i = 1 to overlappedFaces.count do
 		(
-			
-			local currOverlappedFaces = #{}
+		
+			currOverlappedFaces = #{}
 			
 			for j = 1 + 1 to overlappedFaces.count do
 			(
 				if (overlappedFaces[i] != overlappedFaces[j]) do
 				(
-					format "Checking face index % \n" overlappedFaces[i]
+					format "\nChecking face index % \n" overlappedFaces[i]
 					status = polygonsOverlap unwrapMod obj overlappedFaces[i] overlappedFaces[j]
 					
 					format "\n \n Face % and Face % :" overlappedFaces[i] overlappedFaces[j]
@@ -131,42 +214,46 @@ if selection.count == 1 then
 					)
 				)
 			)
-			format "\nOverlapped Faces: % " currOverlappedFaces
+			
+			format "\n Curr Overlapped Faces: % " currOverlappedFaces
+			
 			if (currOverlappedFaces.numberSet > 0) do
 			(
-				appendIfUnique overlappedFacesArray currOverlappedFaces	
-			)
-		)
-		
-		format "\n\n\nTotal overlapped array: %" overlappedFacesArray
-		
-		uniqueArray = makeUniqueArray overlappedFacesArray
-		
-		format "\n\n\nTotal overlapped unique array test: %" uniqueArray
-		
-		/*
-		for faceIndex in overlappedFaces do
-		(
-			format "FaceIndex: \n"
-			print faceIndex
-			bb1 = getUVBoundingBox unwrapMod obj faceIndex
-		)
-		
-	
-		for i = 1 to overlappedFaces.numberSet do
-		(
-			for j = (i+1) to overlappedFaces.numberSet do
-			(
-				if polygonsOverlap unwrapMod i j do
+				if (overlappedFacesArray.count == 0) then
 				(
-					appendIfUnique overlaps i
-					appendIfUnique overlaps j
+					appendIfUnique overlappedFacesArray currOverlappedFaces
+					
+				)
+				else
+				(
+					format "\n Entered the second set of selected faces"
+					status = SubsetArray overlappedFacesArray currOverlappedFaces
+					
+					if status == 0 do
+					(
+						format "\n Status : % \n" status
+						appendIfUnique overlappedFacesArray currOverlappedFaces
+					)
 				)
 			)
 		)
+		
+		
+-- 		className = classOf currOverlappedFaces
+-- 		format "\n\n\nTotal overlapped array: % Object type: %" overlappedFacesArray className
+		
+		format "\n\n\nTotal overlapped array: % \n" overlappedFacesArray
+		
+		for i = 1 to overlappedFacesArray.count do
+		(
+			unwrapMod.selectFaces overlappedFacesArray[i]
+			unwrapMod.GroupCreateBySelection()
+		)
+	/*
 		-- Create Group By Selection
 		unwrapMod.GroupCreateBySelection()
 	*/
+	
 	
 	)
 )
