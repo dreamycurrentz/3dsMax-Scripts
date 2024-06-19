@@ -1,0 +1,26 @@
+uvcoordNumX = 0
+
+for obj in selection as array do
+(
+	num_faces = polyop.getNumFaces obj
+	max modify mode
+	
+	unwrapMod = Unwrap_UVW()
+	addModifier obj unwrapMod
+
+	format "\nNum Faces: %" num_faces
+	unwrapMod.selectFaces #{1..obj.faces.count}
+	unwrapMod.flattenMapNoParams()
+	unwrapMod.faceToVertSelect()
+	
+	coordPos = point3 uvcoordNumX -1 0
+	unwrapMod.moveSelected coordPos
+	uvcoordNumX += 1
+	
+	subObjectLevel = 3
+	unwrapMod.setTVElementMode 3
+	
+	unwrapMod.scaleSelectedCenter -.9 0
+	
+	collapseStack obj
+)
