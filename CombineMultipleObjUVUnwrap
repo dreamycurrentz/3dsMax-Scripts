@@ -9,18 +9,21 @@ for obj in selection as array do
 	addModifier obj unwrapMod
 
 	format "\nNum Faces: %" num_faces
+	
+	unwrapMod.setTVSubObjectMode 3
 	unwrapMod.selectFaces #{1..obj.faces.count}
+	
 	unwrapMod.flattenMapNoParams()
-	unwrapMod.faceToVertSelect()
+
+	unwrapMod.setTVSubObjectMode 3
+	unwrapMod.selectFaces #{1..obj.faces.count}
+	
+	unwrapMod.scaleSelectedXY -0.5 -0.5 [0.5,0.5,0]
 	
 	coordPos = point3 uvcoordNumX -1 0
+	format "\n CoordPos: %" coordPos
 	unwrapMod.moveSelected coordPos
 	uvcoordNumX += 1
-	
-	subObjectLevel = 3
-	unwrapMod.setTVElementMode 3
-	
-	unwrapMod.scaleSelectedCenter -.9 0
 	
 	collapseStack obj
 )
